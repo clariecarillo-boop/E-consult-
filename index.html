@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+
+    <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Econsult</title>
+
+    <link rel="icon" type="image/png" href="logo.jpg"  >
+    <link rel="stylesheet" href="Main.css
+    ">
+ <head>
+     <img src="whitelogo.png" alt="Econsult Logo" id="ANT">
+      <h2>Login to proceed</h2>
+      <form id="loginForm">
+        <input type="text" id="loginUsername" placeholder="Username" required />
+        <input type="password" id="loginPassword" placeholder="Password" required />
+
+        <div class="show-password">
+          <input type="checkbox" id="Check" />
+          <label for="Check">Show Password</label>
+        </div>
+
+        <button type="submit">Login</button>
+        <div class="message" id="loginMessage"></div>
+      </form>
+      <div class="switch" onclick="showSignup()">Don’t have an account? Sign Up Now</div>
+    </div>
+
+    <div class="box" id="signupBox" style="display:none;">
+      <h2>Sign Up</h2>
+      <form id="signupForm">
+        <input type="text" id="signupUsername" placeholder="Choose Username" required />
+        <input type="password" id="signupPassword" placeholder="Choose Password" required />
+
+        <div class="show-password">
+          <input type="checkbox" id="signupTogglePass" />
+          <label for="signupTogglePass">Show Password</label>
+        </div>
+
+        <button type="submit">Register</button>
+        <div class="message" id="signupMessage"></div>
+      </form>
+      <div class="switch" onclick="showLogin()">Already have an account? Login</div>
+    </div>
+
+    <div id="redirectBox" style="display:none; text-align:center; margin-top:20px;">
+      <p id="redirectMessage"></p>
+      <button id="yesButton">Yes, proceed</button>
+    </div>
+
+    <div id="redirectPopup">
+      <div class="box">
+        <p id="popupMessage">Do you want to continue?</p>
+        <button id="yesBtn">Yes</button>
+      </div>
+    </div>
+
+    <script>
+      function showSignup() {
+        document.getElementById("loginBox").style.display = "none";
+        document.getElementById("signupBox").style.display = "block";
+      }
+
+      function showLogin() {
+        document.getElementById("signupBox").style.display = "none";
+        document.getElementById("loginBox").style.display = "block";
+      }
+
+      // Show/Hide password toggle
+      document.getElementById("Check").addEventListener("change", function () {
+        document.getElementById("loginPassword").type = this.checked ? "text" : "password";
+      });
+      document.getElementById("signupTogglePass").addEventListener("change", function () {
+        document.getElementById("signupPassword").type = this.checked ? "text" : "password";
+      });
+
+      function showRedirectPopup(message) {
+        document.getElementById("popupMessage").textContent = message;
+        document.getElementById("redirectPopup").style.display = "block";
+
+        document.getElementById("yesBtn").onclick = function () {
+          window.location.href = "dashboard.html";
+        };
+      }
+
+      document.getElementById("signupForm").addEventListener("submit", function (event) {
+        event.preventDefault();
+
+        var username = document.getElementById("signupUsername").value;
+        var password = document.getElementById("signupPassword").value;
+
+        var users = JSON.parse(localStorage.getItem("users")) || [];
+
+        var exists = users.find(function (user) {
+          return user.username === username;
+        });
+
+        if (exists) {
+          document.getElementById("signupMessage").textContent = "⚠️ Username already exists!";
+          document.getElementById("signupMessage").style.color = "orange";
+        } else {
+          users.push({ username: username, password: password });
+          localStorage.setItem("users", JSON.stringify(users));
+
+          localStorage.setItem("loggedInUser", JSON.stringify({ username: username, password: password }));
+
+          // Show popup instead of prompt
+          showRedirectPopup("Account created! Click Yes to go to dashboard.");
+        }
+      });
+
+      // Login Function
+  document.getElementById("loginForm").addEventListener("submit", function(event) {
+    event.preventDefault();
+
+    var username = document.getElementById("loginUsername").value;
+    var password = document.getElementById("loginPassword").value;
+
+    var users = JSON.parse(localStorage.getItem("users")) || [];
+
+    var user = users.find(function(u) {
+      return u.username === username && u.password === password;
+    });
+
+    if (user) {
+      document.getElementById("loginMessage").textContent = "✅ Login successful!";
+      document.getElementById("loginMessage").style.color = "lightgreen";
+
+      localStorage.setItem("loggedInUser", JSON.stringify(user));
+
+      showRedirectPopup("Welcome " + user.username + "! Click Yes to go to dashboard.");
+    } else {
+      document.getElementById("loginMessage").textContent = "❌ Invalid username or password";
+      document.getElementById("loginMessage").style.color = "red";
+    }
+  });
+    </script>
+  </body>
+</html>
